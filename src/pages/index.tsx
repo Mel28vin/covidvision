@@ -45,9 +45,7 @@ const Home: NextPage = () => {
   useEffect(() => {
     async function loadModel() {
       if (!model) {
-        const _model = await tf.loadLayersModel(
-          "http://localhost:5000/model.json"
-        )
+        const _model = await tf.loadLayersModel("/assets/tfjs/model.json")
         setModel(_model)
       }
     }
