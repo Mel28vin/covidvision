@@ -20,6 +20,12 @@ const Header = () => {
             >
               <IoLogoGithub /> Source
             </Link>
+            <Link
+              href="https://drive.google.com/drive/folders/1js8RXwjpKSCN2cdsIycwDOYJt7Lyi9Hw?usp=sharing"
+              target="_blank"
+            >
+              Dataset
+            </Link>
             <UserButton />
           </div>
         </nav>

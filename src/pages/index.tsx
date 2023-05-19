@@ -143,7 +143,6 @@ const Home: NextPage = () => {
           ) : null}
         </div>
       </main>
-      <Footer />
     </>
   )
 }
