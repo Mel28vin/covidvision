@@ -1,9 +1,10 @@
+import { UserButton } from "@clerk/nextjs"
 import Link from "next/link"
 import { IoLogoGithub } from "react-icons/io5"
 
 const Header = () => {
   return (
-    <header className="fixed z-20 w-full p-2">
+    <header className="w-full p-2">
       <div className="mx-auto max-w-5xl">
         <nav className="flex items-center justify-between gap-3 text-base">
           <Link href="/" className="group">
@@ -19,9 +20,7 @@ const Header = () => {
             >
               <IoLogoGithub /> Source
             </Link>
-            <Link href="/about">About Me</Link>
-            <Link href="/precautions">Precautions</Link>
-            <Link href="/vaccinations">Vaccinations</Link>
+            <UserButton />
           </div>
         </nav>
       </div>

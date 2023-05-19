@@ -1,19 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-misused-promises */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { type NextPage } from "next"
 import { type ChangeEvent, useState, useEffect } from "react"
 import * as tf from "@tensorflow/tfjs"
 import Head from "next/head"
-import Header from "../components/Header"
-
-// import { api } from "~/utils/api"
+import Image from "next/image"
+import Footer from "~/components/Footer"
 
 const Home: NextPage = () => {
-  // const hello = api.example.hello.useQuery({ text: "from tRPC" })
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [model, setModel] = useState<tf.LayersModel | null>(null)
   const [file, setFile] = useState<string | null>(null)
   const [processing, setProcessing] = useState(false)
@@ -26,7 +18,6 @@ const Home: NextPage = () => {
     const _file = input.files[0]
 
     if (!_file) throw Error("Invalid File")
-    setSelectedImage(URL.createObjectURL(_file))
 
     const fileData = await readImage(_file)
     setFile(fileData)
@@ -45,7 +36,9 @@ const Home: NextPage = () => {
   useEffect(() => {
     async function loadModel() {
       if (!model) {
-        const _model = await tf.loadLayersModel("/assets/tfjs/model.json")
+        const _model = await tf.loadLayersModel(
+          "https://covid-donotdelete-pr-gyuplfpidshoah.s3.jp-tok.cloud-object-storage.appdomain.cloud/model.json"
+        )
         setModel(_model)
       }
     }
@@ -67,11 +60,11 @@ const Home: NextPage = () => {
             .toFloat()
 
           const finalTensor = tf.concat([tensor, tensor, tensor], 3)
-          const predictions = model.predict(finalTensor)
-          console.log(predictions)
-          console.log(predictions.dataSync())
-
-          // setPrediction(parseInt(predictions, 10));
+          const predictions = model.predict(finalTensor) as tf.Tensor
+          if (!predictions) throw Error("Invalid prediction")
+          const result = predictions.dataSync()[0]
+          if (!result) throw Error("Invalid")
+          setPrediction(result)
           setProcessing(false)
           setImageLoaded(false)
         }
@@ -87,36 +80,69 @@ const Home: NextPage = () => {
         <meta name="description" content="A Covid-19 prediction web-app" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Header />
-      <main className="flex min-h-screen flex-col items-center justify-center ">
-        <p className="text-2xl text-red-700">
-          Hola
-          {/* {hello.data ? hello.data.greeting : "Loading tRPC query..."} */}
+      <main className="my-16 flex min-h-screen flex-col items-center justify-start gap-10">
+        <h2 className="text-bold text-3xl">
+          Welcome to the COVIDVision Web App
+        </h2>
+        <p className="w-1/2 text-center">
+          This is a web application built using NextJS and Tensorflowjs to
+          accurately predict and classify CT Scans of any patients&apos;, Lungs
+          as COVID / non-COVID
         </p>
-        <form className="Form">
-          <label htmlFor="upload-image">Upload image</label>
-          <input
-            id="image-selector"
-            type="file"
-            name="upload-image"
-            accept="image/*"
-            className="File-selector"
-            onChange={handleImageUpload}
-            disabled={!model || processing}
-          />
-        </form>
+        {!!model ? (
+          <form className="Form">
+            <label
+              htmlFor="upload-image"
+              className="flex cursor-pointer items-center gap-3 rounded-3xl border border-dashed border-gray-300 bg-gray-50 p-4"
+            >
+              <Image
+                className="h-12 w-auto"
+                src="/upload.webp"
+                alt="Upload Image"
+                height={50}
+                width={50}
+              />
+              <div className="space-y-2">
+                <h4 className="text-base font-semibold text-gray-700">
+                  Upload a file
+                </h4>
+              </div>
+              <input
+                type="file"
+                id="upload-image"
+                name="upload-image"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={!model || processing}
+                hidden
+              />
+            </label>
+          </form>
+        ) : (
+          <div> Please wait as the model is loading... </div>
+        )}
+        {prediction && !processing ? (
+          <div>
+            The patient is {prediction >= 0.5 ? "not " : ""} diagnosed with
+            Covid
+          </div>
+        ) : null}
         <div className="Img-display-container">
           {file ? (
-            <img
-              onLoad={() => {
-                setImageLoaded(true)
-              }}
-              alt=""
-              src={file}
-            />
+            <div className="flex flex-col items-center gap-6">
+              <div> Your Uploaded Image </div>
+              <img
+                onLoad={() => {
+                  setImageLoaded(true)
+                }}
+                alt=""
+                src={file}
+              />
+            </div>
           ) : null}
         </div>
       </main>
+      <Footer />
     </>
   )
 }
