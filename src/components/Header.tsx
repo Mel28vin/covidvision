@@ -14,7 +14,7 @@ const Header = () => {
           </Link>
           <div className="hidden items-center gap-6 md:flex">
             <Link
-              href="https://github.com/Mel28vin/my-blog"
+              href="https://github.com/Mel28vin/covidvision"
               target="_blank"
               className="inline-flex items-center gap-1"
             >
