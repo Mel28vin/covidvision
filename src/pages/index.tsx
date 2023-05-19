@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { type NextPage } from "next"
 import { type ChangeEvent, useState, useEffect } from "react"
 import * as tf from "@tensorflow/tfjs"
